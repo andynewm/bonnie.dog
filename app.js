@@ -6,26 +6,13 @@ function getServer(images) {
   var app = express();
   app.set('views', path.join(__dirname, 'views'));
   app.set('view engine', 'pug');
-  app.use('/', express.static(path.join(__dirname, 'static')));
 
   app.get('/', function(request, response) {
-    response.render('index', { images: shuffle(images) });
+    var image = images[Math.floor(Math.random() * images.length)];
+    response.render('index', { image });
   });
 
   return app;
-}
-
-function shuffle(array) {
-  const copy = [...array];
-
-  for (let i = copy.length - 1; i > 0; i -= 1) {
-    let j = Math.floor(Math.random() * (i + 1))
-    let temp = copy[i]
-    copy[i] = copy[j]
-    copy[j] = temp
-  }
-
-  return copy;
 }
 
 function start(port, callback) {
