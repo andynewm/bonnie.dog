@@ -1,0 +1,40 @@
+doctype html
+html
+  head
+    title 🐶 Bonnie
+    link(rel="apple-touch-icon", sizes="180x180", href="/apple-touch-icon.png")
+    link(rel="icon", type="image/png", sizes="32x32", href="/favicon-32x32.png")
+    link(rel="icon", type="image/png", sizes="16x16", href="/favicon-16x16.png")
+    link(href="https://fonts.googleapis.com/css?family=Lato:700", rel="stylesheet")
+    meta(name="viewport", content="width=device-width, initial-scale=1, maximum-scale=1")
+    style.
+      html, body {
+        margin: 0;
+        padding: 0;
+      }
+
+      .bonnie {
+        background-size: cover;
+        background-attachment: fixed;
+        background-position: center;
+        height: 105vh;
+        width: 100%;
+      }
+
+      h1 {
+        font-family: 'Lato', sans-serif;
+        color: rgba(255, 255, 255, 0.8);
+      }
+
+      div {
+        display: flex;
+        font-size: 15vw;
+        align-items: center;
+        justify-content: center;
+      }
+  body
+    each image, index in images
+      div.bonnie(style=`background-image:url('img/${image}')`)
+        case index
+          when 0
+            h1 Bonnie

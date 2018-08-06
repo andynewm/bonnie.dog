@@ -1,0 +1,16 @@
+{
+  "name": "bonnie.dog",
+  "version": "1.0.0",
+  "description": "bonnie.dog site",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
+  },
+  "author": "Andy Newman",
+  "license": "WTFPL",
+  "dependencies": {
+    "express": "^4.15.2",
+    "pug": "^2.0.0-rc.1"
+  }
+}
