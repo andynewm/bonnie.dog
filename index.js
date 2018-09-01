@@ -1,3 +1,5 @@
-var app = require('./app');
+const app = require('./app');
 
-var server = app.start(8080, () => { console.log('bonnie started'); });
+app.listen(8080, () => {
+  console.log('bonnie started');
+});

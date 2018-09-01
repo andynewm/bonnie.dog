@@ -1,25 +1,46 @@
-var express =  require('express');
-var fs = require('fs');
-var path = require('path');
+const express = require('express');
+const fs = require('fs');
+const path = require('path');
 
-function getServer(images) {
-  var app = express();
-  app.set('views', path.join(__dirname, 'views'));
-  app.set('view engine', 'pug');
+const imagesDir = path.join(__dirname, 'static', 'img');
+let images = [];
 
-  app.get('/', function(request, response) {
-    var image = images[Math.floor(Math.random() * images.length)];
-    response.render('index', { image });
-  });
-
-  return app;
-}
-
-function start(port, callback) {
-  fs.readdir(path.join(__dirname, 'static', 'img'), function (err, files) {
-    var server = getServer(files.filter(x => /\.jpg$/i.test(x)));
-    server.listen(port, callback);
+function loadImages() {
+  fs.readdir(imagesDir, (err, files) => {
+    if (err) {
+      console.error(err);
+    } else {
+      images = files.filter(x => /\.jpg$/i.test(x));
+      console.log(`Loaded images - there are ${images.length} Bonnies.`);
+    }
   });
 }
 
-exports.start = start;
+fs.watch(imagesDir, { persistent: false }, loadImages);
+loadImages();
+
+const app = express();
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'pug');
+
+app.get('/', (request, response) => {
+  if (!images.length) {
+    response.status(500).send('no images');
+  } else {
+    const image = images[Math.floor(Math.random() * images.length)];
+    response.render('pics', { image });
+  }
+});
+
+app.get('/vids', (request, response) => {
+  if (!images.length) {
+    response.status(500).send('no images');
+  } else {
+    const image = images[Math.floor(Math.random() * images.length)];
+    response.render('pics', { image });
+  }
+});
+
+app.use('/', express.static(path.join(__dirname, 'static')));
+
+module.exports = app;
