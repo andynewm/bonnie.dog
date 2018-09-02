@@ -12,12 +12,25 @@ html
     meta(property="og:url", content="https://bonnie.dog/vids")
     meta(name="twitter:card", content="summary_large_image")
     style.
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
       html, body {
         margin: 0;
         padding: 0;
         height: 100%;
         width: 100%;
         overflow: hidden;
+      }
+
+      body {
+        background: black;
       }
 
       video {
@@ -30,7 +43,35 @@ html
         left: 50%;
         transform: translate(-50%, -50%);
       }
+
+      #spinner {
+        animation: spin 1300ms linear infinite;
+        border: 13px solid rgb(82, 71, 50);
+        border-radius: 100%;
+        border-top-color: transparent;
+        border-bottom-color: transparent;
+        width: 200px;
+        height: 200px;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        margin-top: -100px;
+        margin-left: -100px;
+        box-sizing: border-box;
+      }
+
+      #dog-face {
+        width: 120px;
+        height: 120px;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        margin-top: -60px;
+        margin-left: -60px;
+      }
 body
+  img#dog-face(src="dog-face.svg", alt="dog")
+  div#spinner
   video#vid(autoplay, muted, loop)
   script.
     const videoTag = document.getElementById('vid');
