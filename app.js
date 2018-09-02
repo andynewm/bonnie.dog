@@ -23,16 +23,12 @@ const app = express();
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 
-app.get('/', (request, response) => {
-  if (!images.length) {
-    response.status(500).send('no images');
-  } else {
-    const image = images[Math.floor(Math.random() * images.length)];
-    response.render('pics', { image });
-  }
+app.get('/vids', (request, response) => {
+  const image = images[Math.floor(Math.random() * images.length)];
+  response.render('vids', { image });
 });
 
-app.get('/vids', (request, response) => {
+app.get('/', (request, response) => {
   if (!images.length) {
     response.status(500).send('no images');
   } else {
