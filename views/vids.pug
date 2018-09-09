@@ -72,29 +72,22 @@ html
 body
   img#dog-face(src="dog-face.svg", alt="dog")
   div#spinner
-  video#vid(autoplay, muted, loop)
+  video#vid(autoplay, muted)
+  script#videos(type="text/json")!= JSON.stringify(vids)
   script.
     const videoTag = document.getElementById('vid');
-    const segments = [
-    '1/360.hdr',
-    '1/0.720.chk',
-    '1/1.720.chk',
-    '1/2.720.chk',
-    '10/0.580.chk',
-    '10/1.360.chk',
-    '11/0.360.chk',
-    '11/1.360.chk',
-    '11/2.360.chk',
-    '12/0.360.chk',
-    '12/1.360.chk',
-    ];
+    const vids = JSON.parse(document.getElementById('videos').innerHTML);
+    const segments = ['vid/webm/1/720.hdr', ...vids['720']];
 
     async function loadSegment(url) {
       if (url) {
-      const data = await fetch(`vid/${url}`)
-        .then(r => r.arrayBuffer());
-
-      videoSourceBuffer.appendBuffer(data);
+        const start = Date.now();
+        const data = await fetch(url)
+          .then(r => r.arrayBuffer());
+        const durationMs = Date.now() - start;
+        console.log(`${url} (${data.byteLength}) loaded in ${durationMs}ms` );
+        console.log(`effective bit rate ${Math.floor(8000 * data.byteLength / durationMs)}`)
+        videoSourceBuffer.appendBuffer(data);
       }
       else {
         mediaSource.endOfStream();
