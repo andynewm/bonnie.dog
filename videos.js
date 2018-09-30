@@ -1,7 +1,8 @@
 const fs = require('fs');
 const path = require('path');
 
-const videoDir = path.join('static', 'vid', 'webm');
+const mp4Dir = path.join('static', 'vid', 'mp4');
+const wembDir = path.join('static', 'vid', 'webm');
 
 function readdir(path) {
   return new Promise((resolve, reject) => {
@@ -16,29 +17,46 @@ function readdir(path) {
   });
 }
 
-async function loadVideos() {
-  const dirs = await readdir(videoDir);
-  return await Promise.all(dirs.map(checkFolder)).then(x => x.filter(y => y));
+async function loadVideos(root) {
+  const dirs = await readdir(root);
+  return await Promise.all(dirs.map(checkFolder(root))).then(x =>
+    x.filter(y => y)
+  );
 }
 
-async function checkFolder(tt) {
-  const files = await readdir(path.join(videoDir, tt));
+async function load() {
+  return {
+    webm: {
+      init: 'vid/webm/init.webm',
+      parts: await loadVideos(wembDir)
+    },
+    mp4: {
+      init: 'vid/mp4/init.mp4',
+      parts: await loadVideos(mp4Dir)
+    }
+  };
+}
+
+const checkFolder = root => async folder => {
+  const folderPath = path.join(root, folder);
+  const files = await readdir(folderPath);
   const sections720 = getSections(files, '720');
 
   if (sections720.length) {
-    const t = x => path.join('vid', 'webm', tt, x);
+    const dropStatic = x =>
+      path.join(...folderPath.split(path.sep).slice(1), x);
     const sections580 = getSections(files, '580');
     const sections360 = getSections(files, '360');
 
     return {
-      [720]: sections720.map(t),
-      [580]: sections580.map(t),
-      [360]: sections360.map(t)
+      [720]: sections720.map(dropStatic),
+      [580]: sections580.map(dropStatic),
+      [360]: sections360.map(dropStatic)
     };
   }
 
   return null;
-}
+};
 
 function getSections(files, res) {
   return files
@@ -49,4 +67,4 @@ function getSections(files, res) {
     .map(x => x.name);
 }
 
-module.exports = loadVideos;
+module.exports = load;

@@ -34,14 +34,12 @@ html
       }
 
       video {
-        min-width: 100%;
-        min-height: 100%;
-        width: auto;
-        height: auto;
         position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
       }
 
       #spinner {
@@ -72,6 +70,6 @@ html
 body
   img#dog-face(src="dog-face.svg", alt="dog")
   div#spinner
-  video#vid(autoplay, muted)
+  video#vid(autoplay, muted, loop)
   script#videos(type="text/json")!= JSON.stringify(vids)
   script(src="vids.js", type="module")

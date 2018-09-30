@@ -21,7 +21,9 @@ function loadImages() {
 
 fs.watch(imagesDir, { persistent: false }, loadImages);
 loadImages();
-loadVideos().then(x => (videos = x));
+loadVideos().then(x => {
+  videos = x;
+});
 
 const app = express();
 app.set('views', path.join(__dirname, 'views'));
@@ -30,15 +32,23 @@ app.set('view engine', 'pug');
 app.use('/', express.static(path.join(__dirname, 'static')));
 
 app.get('/vids', (request, response) => {
-  const shuffledVideos = arrayUtils.shuffle(videos);
   const vids = {
-    [360]: arrayUtils.flatten(shuffledVideos.map(x => x['360'])),
-    [580]: arrayUtils.flatten(shuffledVideos.map(x => x['580'])),
-    [720]: arrayUtils.flatten(shuffledVideos.map(x => x['720']))
+    mp4: { init: videos.mp4.init, parts: getShuffled(videos.mp4.parts) },
+    webm: { init: videos.webm.init, parts: getShuffled(videos.webm.parts) }
   };
 
   response.render('vids', { vids });
 });
+
+function getShuffled(parts) {
+  const shuffledVideos = arrayUtils.shuffle(parts);
+
+  return {
+    [360]: arrayUtils.flatten(shuffledVideos.map(x => x['360'])),
+    [580]: arrayUtils.flatten(shuffledVideos.map(x => x['580'])),
+    [720]: arrayUtils.flatten(shuffledVideos.map(x => x['720']))
+  };
+}
 
 app.get('/', (request, response) => {
   if (!images.length) {
