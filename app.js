@@ -16,7 +16,7 @@ function loadImages() {
       console.error(err);
     } else {
       images = files.filter(
-        x => /\.jpg$/i.test(x) && !/\.preview\.jpg$/.test(x)
+        x => /\.jpg$/i.test(x) && !/\.preview\.jpg$/.test(x),
       );
       console.log(`Loaded images - there are ${images.length} Bonnies.`);
     }
@@ -47,8 +47,8 @@ app.post('/admin/pic', async (request, response) => {
       .resize(300, 300, { withoutEnlargement: true, fit: 'outside' })
       .jpeg({ quality: 90 })
       .toFile(
-        path.join(__dirname, 'static', 'img', 'resized', `test.preview.jpg`)
-      )
+        path.join(__dirname, 'static', 'img', 'resized', `test.preview.jpg`),
+      ),
   ]);
 
   response.status(204).send();
@@ -66,17 +66,13 @@ app.post('/admin/password', (request, response) => {
 });
 
 app.get('/admin', (request, response) => {
-  if (!images.length) {
-    response.status(500).send('no images');
-  } else {
-    response.render('admin', { images });
-  }
+  response.render('admin', { images });
 });
 
 app.get('/vids', (request, response) => {
   const vids = {
     mp4: { init: videos.mp4.init, parts: getShuffled(videos.mp4.parts) },
-    webm: { init: videos.webm.init, parts: getShuffled(videos.webm.parts) }
+    webm: { init: videos.webm.init, parts: getShuffled(videos.webm.parts) },
   };
 
   response.render('vids', { vids });
@@ -88,7 +84,7 @@ function getShuffled(parts) {
   return {
     [360]: arrayUtils.flatten(shuffledVideos.map(x => x['360'])),
     [580]: arrayUtils.flatten(shuffledVideos.map(x => x['580'])),
-    [720]: arrayUtils.flatten(shuffledVideos.map(x => x['720']))
+    [720]: arrayUtils.flatten(shuffledVideos.map(x => x['720'])),
   };
 }
 

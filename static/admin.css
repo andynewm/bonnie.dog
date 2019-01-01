@@ -166,6 +166,7 @@ img.portraitPreview {
 .previews {
   background-color: #eee;
   display: flex;
+  position: relative;
   align-items: center;
   justify-content: center;
   width: 100%;
@@ -197,7 +198,7 @@ h2 {
   margin: 5px;
 }
 
-button {
+.imageContainer button {
   color: #f1f3f5;
   font-size: 16px;
   border: none;
@@ -211,6 +212,10 @@ button {
   flex: 1 1 auto;
   align-items: center;
   justify-content: center;
+}
+
+.imageContainer button:disabled {
+  color: #ccc;
 }
 
 button.upload {
@@ -236,11 +241,23 @@ button > svg {
   }
 }
 
+.spinnerContainer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #eee;
+}
+
 .spinner {
   width: 50px;
   height: 50px;
-  border: 4px solid red;
-  border-right: 4px solid transparent;
+  border: 6px solid #ccc;
+  border-right: 6px solid transparent;
   border-radius: 50px;
-  animation: spin 600ms linear infinite;
+  animation: spin 800ms linear infinite;
 }

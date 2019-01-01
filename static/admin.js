@@ -13,7 +13,7 @@ const clampDimensions = (width, height, limit) => {
 
   return {
     width: Math.round(ratio * width),
-    height: Math.round(ratio * height)
+    height: Math.round(ratio * height),
   };
 };
 
@@ -24,6 +24,7 @@ const getImageBlock = file => {
   const name = block.querySelector('.name');
   const upload = block.querySelector('.upload');
   const remove = block.querySelector('.remove');
+  const spinnerContainer = block.querySelector('.spinnerContainer');
 
   remove.addEventListener('click', e => {
     e.target.parentElement.parentElement.remove();
@@ -38,18 +39,20 @@ const getImageBlock = file => {
       const x = canvas.toDataURL('image/jpeg', 0.9);
       landscapePreview.src = x;
       portraitPreview.src = x;
+      spinnerContainer.style.display = 'none';
 
       fuck(img, 2000).toBlob(
         b => {
           upload.addEventListener('click', () => {
             fetch('/admin/pic', {
               method: 'POST',
-              body: new File([b], file.name, { type: 'image/jpeg' })
+              body: new File([b], file.name, { type: 'image/jpeg' }),
             });
           });
+          upload.disabled = false;
         },
         'image/jpeg',
-        0.93
+        0.93,
       );
     });
 
@@ -135,9 +138,9 @@ passwordShield.addEventListener('submit', async e => {
   const status = await fetch('/admin/password', {
     method: 'POST',
     headers: {
-      'Content-Type': 'application/json'
+      'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ password })
+    body: JSON.stringify({ password }),
   }).then(x => x.status);
 
   switch (status) {
