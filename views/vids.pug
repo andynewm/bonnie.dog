@@ -67,9 +67,43 @@ html
         margin-top: -60px;
         margin-left: -60px;
       }
+
+      #errors {
+        color: red;
+        font-family: monospace;
+      }
+
+      #fullscreen {
+        position: fixed;
+        bottom: 0;
+        right: 0;
+        background: #777;
+        border: none;
+        outline: none;
+        padding: 10px;
+        font-size: 16px;
+        font-family: monospace;
+        color: #333;
+        mix-blend-mode: luminosity;
+      }
+
+      body:fullscreen #fullscreen {
+        display:none;
+      }
+      body:-moz-full-screen #fullscreen {
+        display:none;
+      }
+      body:-webkit-full-screen #fullscreen {
+        display:none;
+      }
+      body:-ms-fullscreen #fullscreen {
+        display: none;
+      }
 body
   img#dog-face(src="dog-face.svg", alt="dog")
   div#spinner
+  pre#errors
   video#vid(autoplay, muted, loop)
+  button#fullscreen(type="button") fullscreen
   script#videos(type="text/json")!= JSON.stringify(vids)
-  script(src="vids.js", type="module")
+  script(src="vids.js?2")

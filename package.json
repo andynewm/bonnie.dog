@@ -4,13 +4,26 @@
   "description": "bonnie.dog site",
   "main": "index.js",
   "scripts": {
+    "build": "webpack -p",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node index.js"
+    "start": "node index.js",
+    "start-debug": "nodemon index.js"
   },
   "author": "Andy Newman",
   "license": "WTFPL",
   "dependencies": {
+    "@babel/polyfill": "^7.0.0",
+    "body-parser": "^1.18.3",
     "express": "^4.15.2",
     "pug": "^2.0.0-rc.1"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.1.2",
+    "@babel/preset-env": "^7.1.0",
+    "babel-loader": "^8.0.4",
+    "nodemon": "^1.18.9",
+    "sharp": "^0.21.1",
+    "webpack": "^4.20.2",
+    "webpack-cli": "^3.1.2"
   }
 }

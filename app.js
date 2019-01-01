@@ -3,6 +3,8 @@ const fs = require('fs');
 const path = require('path');
 const loadVideos = require('./videos');
 const arrayUtils = require('./arrayUtils');
+const sharp = require('sharp');
+const bodyParser = require('body-parser');
 
 const imagesDir = path.join(__dirname, 'static', 'img');
 let images = [],
@@ -13,7 +15,9 @@ function loadImages() {
     if (err) {
       console.error(err);
     } else {
-      images = files.filter(x => /\.jpg$/i.test(x));
+      images = files.filter(
+        x => /\.jpg$/i.test(x) && !/\.preview\.jpg$/.test(x)
+      );
       console.log(`Loaded images - there are ${images.length} Bonnies.`);
     }
   });
@@ -26,10 +30,48 @@ loadVideos().then(x => {
 });
 
 const app = express();
+app.use(bodyParser.raw({ type: 'image/jpeg', limit: '20MB' }));
+app.post('/admin/pic', async (request, response) => {
+  const password = process.env.password || 'bonnie';
+  const sha = sharp(request.body);
+  console.log(require('bytes').format(request.body.length));
+
+  await Promise.all([
+    sha
+      .clone()
+      .resize(2000, 2000, { withoutEnlargement: true, fit: 'outside' })
+      .jpeg({ quality: 93 })
+      .toFile(path.join(__dirname, 'static', 'img', 'resized', `test.jpg`)),
+    sha
+      .clone()
+      .resize(300, 300, { withoutEnlargement: true, fit: 'outside' })
+      .jpeg({ quality: 90 })
+      .toFile(
+        path.join(__dirname, 'static', 'img', 'resized', `test.preview.jpg`)
+      )
+  ]);
+
+  response.status(204).send();
+});
+
+app.use(bodyParser.json());
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 
 app.use('/', express.static(path.join(__dirname, 'static')));
+
+app.post('/admin/password', (request, response) => {
+  const password = process.env.password || 'bonnie';
+  response.status(request.body.password === password ? 204 : 401).send();
+});
+
+app.get('/admin', (request, response) => {
+  if (!images.length) {
+    response.status(500).send('no images');
+  } else {
+    response.render('admin', { images });
+  }
+});
 
 app.get('/vids', (request, response) => {
   const vids = {
@@ -54,7 +96,12 @@ app.get('/', (request, response) => {
   if (!images.length) {
     response.status(500).send('no images');
   } else {
-    const image = images[Math.floor(Math.random() * images.length)];
+    let image;
+    if (request.query.i) {
+      image = request.query.i + '.jpg';
+    } else {
+      image = images[Math.floor(Math.random() * images.length)];
+    }
     response.render('pics', { image });
   }
 });
