@@ -6,6 +6,8 @@ const arrayUtils = require('./arrayUtils');
 const sharp = require('sharp');
 const bodyParser = require('body-parser');
 
+const getPassword = () => process.env.password || 'bonnie';
+
 const imagesDir = path.join(__dirname, 'static', 'img');
 let images = [],
   videos = [];
@@ -32,24 +34,33 @@ loadVideos().then(x => {
 const app = express();
 app.use(bodyParser.raw({ type: 'image/jpeg', limit: '20MB' }));
 app.post('/admin/pic', async (request, response) => {
-  const password = process.env.password || 'bonnie';
+  const password = getPassword();
+  if (password !== request.header('password')) {
+    response.status("401").send();
+    return;
+  }
+
   const sha = sharp(request.body);
   console.log(require('bytes').format(request.body.length));
+
+  const fileName = Math.max(0, ...images.map(x => Number(x.slice(0, -4))).filter(x => !isNaN(x))) + 1;
 
   await Promise.all([
     sha
       .clone()
       .resize(2000, 2000, { withoutEnlargement: true, fit: 'outside' })
       .jpeg({ quality: 93 })
-      .toFile(path.join(__dirname, 'static', 'img', 'resized', `test.jpg`)),
+      .toFile(path.join(__dirname, 'static', 'img', `${fileName}.jpg`)),
     sha
       .clone()
       .resize(300, 300, { withoutEnlargement: true, fit: 'outside' })
       .jpeg({ quality: 90 })
       .toFile(
-        path.join(__dirname, 'static', 'img', 'resized', `test.preview.jpg`),
+        path.join(__dirname, 'static', 'img', `${fileName}.preview.jpg`),
       ),
   ]);
+
+  images.push(`${fileName}.jpg`);
 
   response.status(204).send();
 });
@@ -61,7 +72,7 @@ app.set('view engine', 'pug');
 app.use('/', express.static(path.join(__dirname, 'static')));
 
 app.post('/admin/password', (request, response) => {
-  const password = process.env.password || 'bonnie';
+  const password = getPassword();
   response.status(request.body.password === password ? 204 : 401).send();
 });
 

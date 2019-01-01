@@ -43,11 +43,19 @@ const getImageBlock = file => {
 
       fuck(img, 2000).toBlob(
         b => {
-          upload.addEventListener('click', () => {
-            fetch('/admin/pic', {
+          upload.addEventListener('click', async e => {
+            upload.disabled = true;
+            remove.disabled = true;
+            spinnerContainer.style.display = 'flex';
+            const password = localStorage.getItem('password');
+
+            await fetch('/admin/pic', {
               method: 'POST',
+              headers: new Headers({ password }),
               body: new File([b], file.name, { type: 'image/jpeg' }),
             });
+
+            e.target.parentElement.parentElement.remove();
           });
           upload.disabled = false;
         },
@@ -129,36 +137,44 @@ upload.addEventListener('change', () => {
   }
 });
 
-passwordShield.addEventListener('submit', async e => {
-  const password = passwordInput.value;
-  passwordInput.disabled = true;
-  passwordButton.disabled = true;
-  e.preventDefault();
+if (localStorage.getItem('password')) {
+  passwordShield.style.display = 'none';
+} else {
+  passwordShield.addEventListener('submit', async e => {
+    const password = passwordInput.value;
+    passwordInput.disabled = true;
+    passwordButton.disabled = true;
+    e.preventDefault();
 
-  const status = await fetch('/admin/password', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ password }),
-  }).then(x => x.status);
+    const status = await fetch('/admin/password', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ password }),
+    }).then(x => x.status);
 
-  switch (status) {
-    case 204:
-      passwordShield.classList.add('right');
-      setTimeout(() => {
-        passwordShield.style.display = 'none';
-      }, 300);
-      return;
+    switch (status) {
+      case 204:
+        passwordShield.classList.add('right');
+        setTimeout(() => {
+          passwordShield.style.display = 'none';
+        }, 300);
 
-    default:
-      passwordShield.classList.add('wrong');
-      setTimeout(() => {
-        passwordShield.classList.remove('wrong');
-        passwordInput.disabled = false;
-        passwordButton.disabled = false;
-      }, 700);
+        // this is a bad idea really
+        localStorage.setItem('password', password);
 
-      return;
-  }
-});
+        return;
+
+      default:
+        passwordShield.classList.add('wrong');
+        setTimeout(() => {
+          passwordShield.classList.remove('wrong');
+          passwordInput.disabled = false;
+          passwordButton.disabled = false;
+        }, 700);
+
+        return;
+    }
+  });
+}
