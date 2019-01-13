@@ -36,14 +36,17 @@ app.use(bodyParser.raw({ type: 'image/jpeg', limit: '20MB' }));
 app.post('/admin/pic', async (request, response) => {
   const password = getPassword();
   if (password !== request.header('password')) {
-    response.status("401").send();
+    response.status('401').send();
     return;
   }
 
   const sha = sharp(request.body);
-  console.log(require('bytes').format(request.body.length));
 
-  const fileName = Math.max(0, ...images.map(x => Number(x.slice(0, -4))).filter(x => !isNaN(x))) + 1;
+  const fileName =
+    Math.max(
+      0,
+      ...images.map(x => Number(x.slice(0, -4))).filter(x => !isNaN(x)),
+    ) + 1;
 
   await Promise.all([
     sha
@@ -55,14 +58,14 @@ app.post('/admin/pic', async (request, response) => {
       .clone()
       .resize(300, 300, { withoutEnlargement: true, fit: 'outside' })
       .jpeg({ quality: 90 })
-      .toFile(
-        path.join(__dirname, 'static', 'img', `${fileName}.preview.jpg`),
-      ),
+      .toFile(path.join(__dirname, 'static', 'img', `${fileName}.preview.jpg`)),
   ]);
 
-  images.push(`${fileName}.jpg`);
+  const url = `${fileName}.jpg`;
 
-  response.status(204).send();
+  images.push(url);
+
+  response.status(201).json({ url });
 });
 
 app.use(bodyParser.json());
@@ -78,6 +81,10 @@ app.post('/admin/password', (request, response) => {
 
 app.get('/admin', (request, response) => {
   response.render('admin', { images });
+});
+
+app.get('/admin/images', (request, response) => {
+  response.json(images);
 });
 
 app.get('/vids', (request, response) => {

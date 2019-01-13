@@ -1,12 +1,45 @@
 const upload = document.getElementById('upload');
-const uploadPanel = document.getElementById('uploadPanel');
-const previewPc = document.getElementById('previewPc');
-const previewMobile = document.getElementById('previewMobile');
+const imageList = document.getElementById('imageList');
+const livePreviews = document.getElementById('livePreviews');
+const livePreviewTemplate = document.getElementById('livePreview').content;
+const livePreviewLandscape = document.getElementById('landscapeLivePreview');
+const livePreviewPortrait = document.getElementById('portraitLivePreview');
 const passwordShield = document.getElementById('passwordShield');
 const passwordButton = document.getElementById('passwordSubmit');
 const passwordInput = document.getElementById('password');
 const template = document.getElementById('imageBlock').content;
 const uploads = document.getElementById('uploads');
+const indexOption = document.getElementById('indexOption');
+const uploadOption = document.getElementById('uploadOption');
+const indexPanel = document.getElementById('indexPanel');
+const uploadPanel = document.getElementById('uploadPanel');
+
+imageList.addEventListener('click', ({ target }) => {
+  if (target.matches('img')) {
+    livePreviewLandscape.src = target.src;
+    livePreviewPortrait.src = target.src;
+    livePreviews.style.display = '';
+  }
+});
+
+livePreviews.addEventListener(
+  'click',
+  () => (livePreviews.style.display = 'none'),
+);
+
+indexOption.addEventListener('click', () => {
+  indexOption.classList.add('active');
+  indexPanel.classList.add('active');
+  uploadOption.classList.remove('active');
+  uploadPanel.classList.remove('active');
+});
+
+uploadOption.addEventListener('click', () => {
+  indexOption.classList.remove('active');
+  indexPanel.classList.remove('active');
+  uploadOption.classList.add('active');
+  uploadPanel.classList.add('active');
+});
 
 const clampDimensions = (width, height, limit) => {
   const ratio = limit / Math.min(width, height);
@@ -15,6 +48,14 @@ const clampDimensions = (width, height, limit) => {
     width: Math.round(ratio * width),
     height: Math.round(ratio * height),
   };
+};
+
+const getLivePreview = url => {
+  const block = livePreviewTemplate.cloneNode(true);
+  const img = block.querySelector('img');
+  img.src = `img/${url.slice(0, -4)}.preview.jpg`;
+
+  return block;
 };
 
 const getImageBlock = file => {
@@ -26,8 +67,8 @@ const getImageBlock = file => {
   const remove = block.querySelector('.remove');
   const spinnerContainer = block.querySelector('.spinnerContainer');
 
-  remove.addEventListener('click', e => {
-    e.target.parentElement.parentElement.remove();
+  remove.addEventListener('click', ({ target }) => {
+    target.closest('.imageContainer').remove();
   });
 
   const reader = new FileReader();
@@ -35,7 +76,7 @@ const getImageBlock = file => {
     const img = new Image();
 
     img.addEventListener('load', () => {
-      const canvas = fuck(img, 320);
+      const canvas = fuck(img, 160);
       const x = canvas.toDataURL('image/jpeg', 0.9);
       landscapePreview.src = x;
       portraitPreview.src = x;
@@ -43,19 +84,21 @@ const getImageBlock = file => {
 
       fuck(img, 2000).toBlob(
         b => {
-          upload.addEventListener('click', async e => {
+          upload.addEventListener('click', async ({ target }) => {
             upload.disabled = true;
             remove.disabled = true;
             spinnerContainer.style.display = 'flex';
             const password = localStorage.getItem('password');
 
-            await fetch('/admin/pic', {
+            const response = await fetch('/admin/pic', {
               method: 'POST',
               headers: new Headers({ password }),
               body: new File([b], file.name, { type: 'image/jpeg' }),
-            });
+            }).then(x => x.json());
 
-            e.target.parentElement.parentElement.remove();
+            imageList.appendChild(getLivePreview(response.url));
+
+            target.closest('.imageContainer').remove();
           });
           upload.disabled = false;
         },
