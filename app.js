@@ -12,14 +12,16 @@ const imagesDir = path.join(__dirname, 'static', 'img');
 let images = [],
   videos = [];
 
+const getNumber = filename => Number(filename.replace(/\D/g, ''));
+
 function loadImages() {
   fs.readdir(imagesDir, (err, files) => {
     if (err) {
       console.error(err);
     } else {
-      images = files.filter(
-        x => /\.jpg$/i.test(x) && !/\.preview\.jpg$/.test(x),
-      );
+      images = files
+        .filter(x => /\.jpg$/i.test(x) && !/\.preview\.jpg$/.test(x))
+        .sort((a, b) => getNumber(a) - getNumber(b));
       console.log(`Loaded images - there are ${images.length} Bonnies.`);
     }
   });
