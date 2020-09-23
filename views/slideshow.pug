@@ -1,0 +1,78 @@
+doctype html
+html
+  head
+    script(async, src="https://www.googletagmanager.com/gtag/js?id=UA-140388213-1")
+    script.
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'UA-140388213-1');
+    title 🐶 Bonnie
+    link(rel="apple-touch-icon", sizes="180x180", href="/apple-touch-icon.png")
+    link(rel="icon", type="image/png", sizes="32x32", href="/favicon-32x32.png")
+    link(rel="icon", type="image/png", sizes="16x16", href="/favicon-16x16.png")
+    meta(name="viewport", content="width=device-width, initial-scale=1, maximum-scale=1")
+    meta(property="og:title", content="🐶 Bonnie")
+    meta(property="og:description", content="Bonnie is a good girl.")
+    meta(property="og:image", content="https://bonnie.dog/img/0.jpg")
+    meta(property="og:url", content="https://bonnie.dog")
+    meta(name="twitter:card", content="summary_large_image")
+    style.
+      html, body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        width: 100%;
+        overflow: hidden;
+      }
+
+      img {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 100%;
+        object-fit: cover;
+        transition: filter 1100ms;
+      }
+
+      .fade {
+        transition: filter 1100ms, opacity 2200ms;
+        opacity: 0;
+      }
+
+      .fade-half {
+        filter: brightness(1.5);
+      }
+  body
+    audio(src="/audio/at-the-river.m4a", autoplay)
+    img#bg(src=`img/${images[1]}`)
+    img#fg(src=`img/${images[0]}`)
+    script(type="text/javascript").
+      const images = !{JSON.stringify(images)};
+      const fg = document.getElementById('fg');
+      const bg = document.getElementById('bg');
+      const audio = document.querySelector('audio');
+      let index = 0;
+
+      document.body.addEventListener('click', () => {
+        audio.play();
+      });
+
+      fg.addEventListener('transitionend', e => {
+        if (e.propertyName === 'opacity') {
+          index++;
+          fg.src = `img/${images[index % images.length]}`;
+          setTimeout(() => fg.classList.remove('fade'), 500);
+          setTimeout(() => bg.src = `img/${images[(index + 1) % images.length]}`, 1000);
+        } else {
+          fg.classList.remove('fade-half');
+          bg.classList.remove('fade-half');
+        }
+       });
+
+      setInterval(function () {
+        fg.classList.add('fade');
+        fg.classList.add('fade-half');
+        bg.classList.add('fade-half');
+      }, 9000);

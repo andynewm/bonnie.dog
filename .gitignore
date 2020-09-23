@@ -1,5 +1,10 @@
 node_modules
+original-imgs
+incoming-imgs
+current
 static/img
 static/vid
+static/audio
 .vscode
 raw
+.env

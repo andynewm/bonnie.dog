@@ -1,0 +1,27 @@
+doctype html
+html
+  head
+    title 🐶 Bonnie
+    link(rel="apple-touch-icon", sizes="180x180", href="/apple-touch-icon.png")
+    link(rel="icon", type="image/png", sizes="32x32", href="/favicon-32x32.png")
+    link(rel="icon", type="image/png", sizes="16x16", href="/favicon-16x16.png")
+    meta(name="viewport", content="width=device-width, initial-scale=1, maximum-scale=1")
+    style.
+      html, body {
+        padding: 0;
+        height: 100%;
+        width: 100%;
+        overflow: hidden;
+      }
+      body {
+        font-family: monospace;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin: 30px;
+      }
+body
+  p just added #{newBonnies.length} Bonnies
+  each bonnie in newBonnies
+    div
+      img(src=`data:image/jpg;base64,${bonnie}`)
