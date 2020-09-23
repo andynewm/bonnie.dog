@@ -1,6 +1,12 @@
 doctype html
 html
   head
+    script(async, src="https://www.googletagmanager.com/gtag/js?id=UA-140388213-1")
+    script.
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'UA-140388213-1');
     title 🐶 Bonnie
     link(rel="apple-touch-icon", sizes="180x180", href="/apple-touch-icon.png")
     link(rel="icon", type="image/png", sizes="32x32", href="/favicon-32x32.png")
